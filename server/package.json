@@ -10,10 +10,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "better-sqlite3": "^12.9.0",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
-    "nodemailer": "^8.0.0"
+    "nodemailer": "^8.0.0",
+    "razorpay": "^2.9.6"
   }
 }

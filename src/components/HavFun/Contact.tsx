@@ -157,17 +157,23 @@ const Contact = () => {
                             </form>
                         </div>
 
-                        <div className="rounded-3xl overflow-hidden h-[300px] border border-border/40 shadow-premium">
+                        <a 
+                            href="https://maps.app.goo.gl/CKAFYjv52JB5sF3g6"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block rounded-3xl overflow-hidden h-[300px] border border-border/40 shadow-premium relative group cursor-pointer"
+                        >
+                            <div className="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15549.988267039014!2d80.1706935!3d13.0197595!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5260d000632a69%3A0x6b4991264380eb0b!2sHavFun%20Trampoline%20Park!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                                 width="100%"
                                 height="100%"
-                                style={{ border: 0 }}
+                                style={{ border: 0, pointerEvents: 'none' }}
                                 allowFullScreen={true}
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
                             ></iframe>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>

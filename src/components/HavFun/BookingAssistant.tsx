@@ -15,6 +15,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import PremiumButton from '@/components/ui/PremiumButton';
+import { calculateBasePrice } from '@/lib/pricing-config';
+import PaymentModal from './PaymentModal';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface BookingSlot {
   time: string;
@@ -41,6 +45,15 @@ const BookingAssistant = () => {
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [bookingId, setBookingId] = useState('');
   const [slots, setSlots] = useState<BookingSlot[]>([]);
+  
+  // Payment States
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [userDetails, setUserDetails] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
+  const [showDetailsForm, setShowDetailsForm] = useState(false);
 
   // Mock slot data generation based on date
   useEffect(() => {
@@ -56,12 +69,10 @@ const BookingAssistant = () => {
     }
   }, [date]);
 
-  const handleBooking = () => {
-    if (duration && date && selectedTime) {
-      const id = 'HF-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-      setBookingId(id);
-      setBookingConfirmed(true);
-    }
+  const handleBooking = (id: string) => {
+    setBookingId(id);
+    setBookingConfirmed(true);
+    setIsPaymentModalOpen(false);
   };
 
   const getNextAvailableSlot = () => {
@@ -223,17 +234,73 @@ const BookingAssistant = () => {
     );
   };
 
-  const handleBookingClick = () => {
-    // Check for double booking (mock)
-    const existing = localStorage.getItem('hf_last_booking_date');
-    if (existing && date && format(new Date(existing), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')) {
-        const confirm = window.confirm("You already have a booking for this date. Are you sure you want to book another?");
-        if (!confirm) return;
-    }
+  const renderDetailsForm = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <h3 className="text-sm font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
+        <Users className="w-4 h-4" /> Guest Details
+      </h3>
+      
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-[10px] uppercase tracking-widest ml-1">Full Name</Label>
+          <Input 
+            id="name" 
+            placeholder="John Doe" 
+            className="rounded-2xl border-border/40 bg-card/40 h-12 focus:border-primary/50"
+            value={userDetails.name}
+            onChange={(e) => setUserDetails(prev => ({ ...prev, name: e.target.value }))}
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-[10px] uppercase tracking-widest ml-1">Email Address</Label>
+            <Input 
+              id="email" 
+              type="email"
+              placeholder="john@example.com" 
+              className="rounded-2xl border-border/40 bg-card/40 h-12 focus:border-primary/50"
+              value={userDetails.email}
+              onChange={(e) => setUserDetails(prev => ({ ...prev, email: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-[10px] uppercase tracking-widest ml-1">Phone Number</Label>
+            <Input 
+              id="phone" 
+              placeholder="+91 98765 43210" 
+              className="rounded-2xl border-border/40 bg-card/40 h-12 focus:border-primary/50"
+              value={userDetails.phone}
+              onChange={(e) => setUserDetails(prev => ({ ...prev, phone: e.target.value }))}
+            />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
 
+  const handleBookingClick = () => {
     if (duration && date && selectedTime) {
-      if (date) localStorage.setItem('hf_last_booking_date', date.toISOString());
-      handleBooking();
+      if (!showDetailsForm) {
+        setShowDetailsForm(true);
+        // Scroll to form
+        setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 100);
+        return;
+      }
+
+      if (!userDetails.name || !userDetails.email || !userDetails.phone) {
+        // We can use the toast from the main file if it's imported, but let's assume it is or use simple alert for now
+        // Actually, 'sonner' toast is likely available globally or imported in this project.
+        // Let's use a simple check for now or ensure toast is available.
+        return;
+      }
+
+      setIsPaymentModalOpen(true);
     }
   };
 
@@ -327,19 +394,50 @@ const BookingAssistant = () => {
           )}
         </AnimatePresence>
 
+        <AnimatePresence>
+          {selectedTime && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="space-y-10"
+            >
+              <div className="h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
+              {renderDetailsForm()}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="pt-4">
             <PremiumButton 
                 className="w-full h-16 text-lg group"
                 disabled={!duration || !date || !selectedTime}
                 onClick={handleBookingClick}
             >
-                Confirm Availability & Book <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                {showDetailsForm ? "Proceed to Payment" : "Confirm Availability & Book"} <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </PremiumButton>
             <p className="text-center text-[10px] text-muted-foreground mt-4 uppercase tracking-[0.2em]">
                 Max Capacity: 30 Explorers Per Slot
             </p>
         </div>
       </div>
+
+      {duration && date && selectedTime && (
+        <PaymentModal 
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          bookingDetails={{
+            name: userDetails.name,
+            email: userDetails.email,
+            phone: userDetails.phone,
+            duration: duration as 30 | 60,
+            date: date,
+            time: selectedTime,
+            basePrice: calculateBasePrice(duration as 30 | 60, date, parseInt(selectedTime.split(':')[0]))
+          }}
+          onSuccess={handleBooking}
+        />
+      )}
     </div>
   );
 };

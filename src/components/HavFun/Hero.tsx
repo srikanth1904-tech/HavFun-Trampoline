@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Tag } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PremiumButton from '@/components/ui/PremiumButton';
 
@@ -35,14 +35,6 @@ const Hero = () => {
                         Welcome to HavFun Trampoline, the ultimate destination for high-flying fun and unforgettable experiences.
                     </p>
 
-                    <motion.div 
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 1 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/40 text-primary-foreground text-sm font-bold mb-10 backdrop-blur-md"
-                    >
-                        <Tag className="w-4 h-4" /> Weekday Special: ₹99 (10am - 5pm)
-                    </motion.div>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                         <Link to="/booking">

@@ -113,7 +113,7 @@ const Attractions = () => {
                                 </p>
                                 <motion.button
                                     whileTap={{ scale: 0.95 }}
-                                    onClick={() => window.location.href = '/waiver'}
+                                    onClick={() => window.location.href = '/booking'}
                                     className="text-xs font-black uppercase tracking-[0.2em] text-primary hover:text-white transition-colors flex items-center gap-2 group/btn"
                                 >
                                     BOOK FOR {attraction.title}

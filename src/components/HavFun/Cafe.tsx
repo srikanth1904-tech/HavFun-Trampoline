@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Coffee, Pizza, ArrowRight, Play } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Cafe = () => {
     return (
@@ -70,6 +71,7 @@ const Cafe = () => {
 
                         <motion.button
                             whileHover={{ x: 10 }}
+                            onClick={() => toast.info("Full menu coming soon!", { description: "We are currently updating our cafe menu." })}
                             className="flex items-center gap-3 text-primary font-black uppercase tracking-[0.3em] text-xs pt-4 group"
                         >
                             View Full Menu
